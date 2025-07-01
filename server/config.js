@@ -1,7 +1,6 @@
 import os from "os";
-
-let fs = require('fs');
-let path = require('path');
+import fs from "fs";
+import path from "path";
 
 
 const config = {
