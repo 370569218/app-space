@@ -1,7 +1,6 @@
 import os from "os";
-
-let fs = require('fs');
-let path = require('path');
+import fs from "fs";
+import path from "path";
 
 
 const config = {
@@ -89,6 +88,17 @@ const config = {
     bucketName:  process.env.OSS_BUCKET_NAME,
     prefix:  process.env.OSS_PREFIX, // Key prefix in object key
     downloadUrl:  process.env.OSS_DOWNLOAD_URL, // binary files download host address.
+  },
+  // Config for Ceph Object Storage (S3 compatible) when storageType value is "ceph".
+  ceph: {
+    accessKeyId: process.env.CEPH_ACCESS_KEY_ID,
+    secretAccessKey: process.env.CEPH_SECRET_ACCESS_KEY,
+    endpoint: process.env.CEPH_ENDPOINT, // Ceph RGW endpoint, e.g., http://ceph-rgw.example.com:7480
+    bucketName: process.env.CEPH_BUCKET_NAME,
+    region: process.env.CEPH_REGION || 'us-east-1', // Default region for S3 compatibility
+    forcePathStyle: true, // Required for Ceph RGW
+    prefix: process.env.CEPH_PREFIX, // Key prefix in object key
+    downloadUrl: process.env.CEPH_DOWNLOAD_URL, // binary files download host address.
   },
 
   jwt: {

@@ -397,6 +397,8 @@ export default class common {
             return common.uploadFileToUpyun(key, filePath);
         } else if (storageType === 'tencentcloud') {
             return common.uploadFileToTencentCloud(key, filePath);
+        } else if (storageType === 'ceph') {
+            return common.uploadFileToCeph(key, filePath);
         }
         throw new AppError.AppError(`${storageType} storageType does not support.`);
     };
@@ -673,6 +675,56 @@ export default class common {
         });
     });
   }
+
+ static uploadFileToCeph  (key, filePath) {
+    return new Promise((resolve, reject) => {
+      let AWS = require('aws-sdk');
+      log.debug('uploadFileToCeph:', key, filePath);
+
+      // Configure AWS SDK for Ceph
+      AWS.config.update({
+        accessKeyId: _.get(config, 'ceph.accessKeyId'),
+        secretAccessKey: _.get(config, 'ceph.secretAccessKey'),
+        region: _.get(config, 'ceph.region', 'us-east-1'),
+        s3ForcePathStyle: _.get(config, 'ceph.forcePathStyle', true), // Required for Ceph RGW
+        endpoint: _.get(config, 'ceph.endpoint')
+      });
+
+      let s3 = new AWS.S3({
+        params: {Bucket: _.get(config, 'ceph.bucketName')},
+        endpoint: _.get(config, 'ceph.endpoint'),
+        s3ForcePathStyle: true
+      });
+
+      // Add prefix if configured
+      if (!_.isEmpty(_.get(config, 'ceph.prefix', ""))) {
+        key = `${_.get(config, 'ceph.prefix')}/${key}`;
+      }
+
+      fs.readFile(filePath, (err, data) => {
+        if (err) {
+          log.error('uploadFileToCeph read file error:', err);
+          return reject(new AppError.AppError(JSON.stringify(err)));
+        }
+
+        log.debug('uploadFileToCeph: uploading file');
+        s3.upload({
+          Key: key,
+          Body: data,
+          ACL: 'public-read',
+        }, (err, response) => {
+          log.debug('uploadFileToCeph response.err:', err);
+          if (err) {
+            log.error('uploadFileToCeph upload error:', err);
+            reject(new AppError.AppError(JSON.stringify(err)));
+          } else {
+            log.debug('uploadFileToCeph upload success:', response);
+            resolve(response.ETag || key);
+          }
+        });
+      });
+    });
+  };
 
 
     static diffCollectionsSync  (collection1, collection2) {

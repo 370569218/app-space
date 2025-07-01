@@ -144,13 +144,43 @@ const common = {
     allowRegister: process.env.APP_SPA_ALLOW_REGISTER || true, 
 
     //是否开启ldap 默认是false 如果公司没有ldap服务可以不用理会
-    openLdap: process.env.APP_SPA_ALLOW_LDAP || false, 
+    openLdap: process.env.APP_SPA_ALLOW_LDAP || false,
     ldapServer: process.env.APP_SPA_LDAP_URL || "",  //ldap server url
     ldapUserDn: process.env.APP_SPA_LDAP_USERDN || "", //ldap管理员dn 管理员用户名
     ldapBindCredentials: process.env.APP_SPA_LDAP_CREDENTIALS || "", //ldap管理员密码
-    ldapBase: process.env.APP_SPA_LDAP_BASE || "" //ldap base
+    ldapBase: process.env.APP_SPA_LDAP_BASE || "", //ldap base
+
+    //存储配置 支持多种存储方式
+    storageType: process.env.STORAGE_TYPE || 'local', // 支持: local, s3, oss, qiniu, upyun, tencentcloud, ceph
+    storageDir: process.env.STORAGE_DIR || '/data/storage', // 本地存储目录
 
 };
+```
+
+### 存储配置说明
+
+项目支持多种存储方式，通过 `STORAGE_TYPE` 环境变量进行配置：
+
+- **local**: 本地存储（默认）
+- **s3**: Amazon S3
+- **oss**: 阿里云对象存储
+- **qiniu**: 七牛云存储
+- **upyun**: 又拍云存储
+- **tencentcloud**: 腾讯云对象存储
+- **ceph**: Ceph 对象存储（新增支持）
+
+#### Ceph 对象存储配置示例
+
+```bash
+# 设置存储类型为 ceph
+export STORAGE_TYPE=ceph
+export CEPH_ACCESS_KEY_ID=your_access_key_id
+export CEPH_SECRET_ACCESS_KEY=your_secret_access_key
+export CEPH_BUCKET_NAME=your_bucket_name
+export CEPH_ENDPOINT=http://your-ceph-rgw-endpoint:7480
+export CEPH_REGION=us-east-1
+export CEPH_PREFIX=app-space
+export CEPH_DOWNLOAD_URL=http://your-ceph-rgw-endpoint:7480/your_bucket_name
 ```
 
 
