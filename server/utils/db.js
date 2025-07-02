@@ -1,3 +1,13 @@
+/*
+ * @Author: Your Name you@example.com
+ * @Date: 2025-07-01 09:24:59
+ * @LastEditors: Your Name you@example.com
+ * @LastEditTime: 2025-07-02 19:28:05
+ * @FilePath: \app-space\server\utils\db.js
+ * @Description: 
+ * 
+ * Copyright (c) 2025 by ${git_name_email}, All Rights Reserved. 
+ */
 const mongoose = require('mongoose')
 const Fawn = require("fawn");
 import config from '../config';
@@ -13,6 +23,7 @@ mongoose.connect(dbUrl, {
         user: config.dbUser,
         pass: config.dbPass,
         dbName: config.dbName,
+        authSource: config.dbName, // 指定认证数据库
         retryWrites: true,useUnifiedTopology: true
     }, (err) => {
     if (err) {
