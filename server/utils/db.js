@@ -2,7 +2,7 @@
  * @Author: Your Name you@example.com
  * @Date: 2025-07-01 09:24:59
  * @LastEditors: Your Name you@example.com
- * @LastEditTime: 2025-07-02 19:28:05
+ * @LastEditTime: 2025-07-02 19:49:52
  * @FilePath: \app-space\server\utils\db.js
  * @Description: 
  * 
@@ -18,12 +18,16 @@ let dbUrl = `mongodb://${config.dbHost}:${config.dbPort}`;
 // }
 
 console.log(dbUrl)
+// 根据用户类型自动选择认证数据库
+// root用户在admin数据库中认证，其他用户在应用数据库中认证
+const authSource = (config.dbUser === 'root') ? 'admin' : config.dbName;
+console.log(`Database connection config: user=${config.dbUser}, authSource=${authSource}, dbName=${config.dbName}`);
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
         user: config.dbUser,
         pass: config.dbPass,
         dbName: config.dbName,
-        authSource: config.dbName, // 指定认证数据库
+        authSource: authSource, // 动态选择认证数据库
         retryWrites: true,useUnifiedTopology: true
     }, (err) => {
     if (err) {
